@@ -1,4 +1,12 @@
+# settings
 /.vscode
+
+# venv
 /python
+
+# testing
 test.py
+
+# terraform
+.terraform*
 *.tfvars
