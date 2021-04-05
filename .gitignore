@@ -10,3 +10,4 @@ test.py
 # terraform
 .terraform*
 *.tfvars
+*.tfstate*
