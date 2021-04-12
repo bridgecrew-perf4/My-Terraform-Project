@@ -1,3 +1,10 @@
+/*
+Main Terraform template that builds the infrastructure defined in the modules.
+
+Author: Chad Bartel
+Date:   2021-04-03
+*/
+
 terraform {
   required_providers {
     aws = {
@@ -8,15 +15,19 @@ terraform {
 }
 
 provider "aws" {
-  profile = "sso_poweruser"
+  profile = var.profile
   region  = "us-west-2"
 }
 
-module "ec2" {
-  source = "./modules/ec2"
-}
+# module "vpc" {
+#   source            = "./modules/vpc"
+#   vpc_cidr    = "10.0.0.0/16"
+#   public_subnet_a_cidr = "10.0.0.0/24"
+#   private_subnet_a_cidr = "10.0.1.0/24"
+# }
 
-output "instance_ip_addr" {
-  description = "The private IP address of the main server instance."
-  value       = aws_instance.example.private_ip
+module "ec2" {
+  source    = "./modules/ec2"
+  ami       = "ami-830c94e3"
+  # subnet_id = module.vpc.aws_subnet_id
 }
