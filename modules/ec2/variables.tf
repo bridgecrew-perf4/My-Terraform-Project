@@ -3,8 +3,8 @@ Variables used with the AWS EC2 Terraform module.
 */
 
 variable "environment" {
-  type = string
-  default = null
+  type        = string
+  default     = null
   description = "Deployment environment name"
 }
 

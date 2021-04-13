@@ -3,8 +3,8 @@ Variables used with the main Terraform template.
 */
 
 variable "environment" {
-  type = string
-  default = null
+  type        = string
+  default     = null
   description = "Deployment environment name"
 }
 
@@ -15,14 +15,14 @@ variable "profile" {
 }
 
 variable "region" {
-  type = string
-  default = null
+  type        = string
+  default     = null
   description = "AWS region"
 }
 
 variable "availability_zone" {
-  type = string
-  default = null
+  type        = string
+  default     = null
   description = "AWS availability zone"
 }
 
@@ -45,7 +45,7 @@ variable "public_subnet_a_cidr" {
 }
 
 variable "private_subnet_a_cidr" {
-  type = string
-  default = null
+  type        = string
+  default     = null
   description = "CIDR block for the private subnet"
 }

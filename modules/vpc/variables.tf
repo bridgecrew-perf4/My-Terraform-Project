@@ -3,14 +3,14 @@ Variables used with the AWS VPC Terraform module.
 */
 
 variable "environment" {
-  type = string
-  default = null
+  type        = string
+  default     = null
   description = "Deployment environment name"
 }
 
 variable "availability_zone" {
-  type = string
-  default = null
+  type        = string
+  default     = null
   description = "AWS availability zone"
 }
 

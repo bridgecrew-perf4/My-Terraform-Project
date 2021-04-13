@@ -18,6 +18,6 @@ resource "aws_instance" "example" {
 
   tags = {
     Name = "${var.environment}_ec2"
-    env = var.environment
+    env  = var.environment
   }
 }

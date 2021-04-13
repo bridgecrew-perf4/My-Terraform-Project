@@ -28,8 +28,8 @@ provider "aws" {
 # }
 
 module "ec2" {
-  source    = "./modules/ec2"
-  ami       = "ami-830c94e3"
+  source      = "./modules/ec2"
+  ami         = "ami-830c94e3"
   environment = var.environment
   # subnet_id = module.vpc.aws_subnet_id
 }
