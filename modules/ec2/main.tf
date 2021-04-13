@@ -17,6 +17,7 @@ resource "aws_instance" "example" {
   user_data     = data.template_file.instance_user_data.rendered
 
   tags = {
-    Name = "ExampleInstance"
+    Name = "${var.environment}_ec2"
+    env = var.environment
   }
 }

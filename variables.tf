@@ -2,10 +2,28 @@
 Variables used with the main Terraform template.
 */
 
+variable "environment" {
+  type = string
+  default = null
+  description = "Deployment environment name"
+}
+
 variable "profile" {
   type        = string
   default     = null
   description = "AWS profile name"
+}
+
+variable "region" {
+  type = string
+  default = null
+  description = "AWS region"
+}
+
+variable "availability_zone" {
+  type = string
+  default = null
+  description = "AWS availability zone"
 }
 
 variable "ami" {
