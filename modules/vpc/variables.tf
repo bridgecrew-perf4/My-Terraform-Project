@@ -14,7 +14,7 @@ variable "availability_zone" {
   description = "AWS availability zone"
 }
 
-variable "vpc_cidr_block" {
+variable "vpc_cidr" {
   type        = string
   default     = null
   description = "CIDR block for the VPC"
@@ -30,4 +30,10 @@ variable "private_subnet_a_cidr" {
   type        = string
   default     = null
   description = "CIDR block for the private subnet"
+}
+
+variable "my_ip_address" {
+  type        = string
+  default     = null
+  description = "My public IP address"
 }

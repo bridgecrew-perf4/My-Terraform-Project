@@ -2,22 +2,76 @@
 Terraform template that builds an EC2 instance.
 */
 
-data "template_file" "instance_user_data" {
-  template = file("./modules/ec2/instance_user_data.tpl")
-
-  vars = {
-    tpl_secret = "test"
+# Local variables
+locals {
+  tags = {
+    env       = var.environment
+    module    = path.module
+    workspace = terraform.workspace
   }
 }
 
-resource "aws_instance" "example" {
-  ami           = var.ami
-  instance_type = "t2.micro"
-  subnet_id     = var.subnet_id
-  user_data     = data.template_file.instance_user_data.rendered
+resource "aws_key_pair" "key" {
+  key_name   = var.key_name
+  public_key = var.public_key
 
-  tags = {
-    Name = "${var.environment}_ec2"
-    env  = var.environment
+  tags = local.tags
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_instance" "bastion" {
+  ami                         = data.aws_ami.ubuntu.id
+  associate_public_ip_address = true
+  availability_zone           = var.availability_zone
+  instance_type               = var.instance_type
+  subnet_id                   = var.public_subnet_id
+  user_data                   = data.template_file.instance_user_data.rendered
+  key_name                    = aws_key_pair.key.key_name
+  vpc_security_group_ids = [
+    var.bastion_sg
+  ]
+
+  tags = merge({
+    Name = "${var.environment}_bastion_host"
+    },
+    local.tags
+  )
+
+  depends_on = [
+    aws_key_pair.key
+  ]
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_instance" "private" {
+  ami                         = data.aws_ami.ubuntu.id
+  associate_public_ip_address = false
+  availability_zone           = var.availability_zone
+  instance_type               = var.instance_type
+  subnet_id                   = var.private_subnet_id
+  user_data                   = data.template_file.instance_user_data.rendered
+  key_name                    = aws_key_pair.key.key_name
+  vpc_security_group_ids = [
+    var.private_sg
+  ]
+
+  tags = merge({
+    Name = "${var.environment}_private_ec2"
+    },
+    local.tags
+  )
+
+  depends_on = [
+    aws_key_pair.key
+  ]
+
+  lifecycle {
+    create_before_destroy = true
   }
 }
