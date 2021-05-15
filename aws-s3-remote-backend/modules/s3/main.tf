@@ -1,81 +1,41 @@
+/*
+Terraform template that builds S3 resources.
+*/
+
+# Local variables
 locals {
-  define_lifecycle_rule  = var.noncurrent_version_expiration != null || length(var.noncurrent_version_transitions) > 0
-  replication_role_count = var.iam_role_arn == null ? 1 : 0
+  tags = {
+    module = path.module
+  }
+  bucket = format(
+    "%s-%s-%s-%s",
+    var.environment,
+    var.region,
+    var.s3_bucket,
+    formatdate(
+      "YYYY-MM-DD",
+      timestamp()
+    )
+  )
 }
 
+# State bucket key
 resource "aws_kms_key" "this" {
-  description             = var.kms_key_description
-  deletion_window_in_days = var.kms_key_deletion_window_in_days
-  enable_key_rotation     = var.kms_key_enable_key_rotation
+  deletion_window_in_days = 30
+  enable_key_rotation     = true
+  description             = "The key used to encrypt the remote state bucket"
 
-  tags = var.tags
-}
+  tags = local.tags
 
-resource "aws_kms_key" "replica" {
-  provider = aws.replica
-
-  description             = var.kms_key_description
-  deletion_window_in_days = var.kms_key_deletion_window_in_days
-  enable_key_rotation     = var.kms_key_enable_key_rotation
-
-  tags = var.tags
-}
-
-resource "aws_s3_bucket" "replica" {
-  provider = aws.replica
-
-  bucket_prefix = var.replica_bucket_prefix
-  force_destroy = var.s3_bucket_force_destroy
-
-  versioning {
-    enabled = true
+  lifecycle {
+    create_before_destroy = true
   }
-
-  dynamic "lifecycle_rule" {
-    for_each = local.define_lifecycle_rule ? [true] : []
-
-    content {
-      enabled = true
-      dynamic "noncurrent_version_transition" {
-        for_each = var.noncurrent_version_transitions
-
-        content {
-          days          = noncurrent_version_transition.value.days
-          storage_class = noncurrent_version_transition.value.storage_class
-        }
-      }
-      dynamic "noncurrent_version_expiration" {
-        for_each = var.noncurrent_version_expiration != null ? [var.noncurrent_version_expiration] : []
-
-        content {
-          days = noncurrent_version_expiration.value.days
-        }
-      }
-    }
-  }
-
-  tags = var.tags
 }
 
-resource "aws_s3_bucket_policy" "state_force_ssl" {
-  bucket = aws_s3_bucket.state.id
-  policy = data.aws_iam_policy_document.state_force_ssl.json
-}
-
-resource "aws_s3_bucket_public_access_block" "replica" {
-  provider = aws.replica
-  bucket   = aws_s3_bucket.replica.id
-
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
-}
-
+# State bucket
 resource "aws_s3_bucket" "state" {
-  bucket_prefix = var.state_bucket_prefix
-  acl           = "private"
-  force_destroy = var.s3_bucket_force_destroy
+  bucket = local.bucket
+  acl    = "private"
 
   versioning {
     enabled = true
@@ -90,60 +50,24 @@ resource "aws_s3_bucket" "state" {
     }
   }
 
-  replication_configuration {
-    role = var.iam_role_arn != null ? var.iam_role_arn : aws_iam_role.replication[0].arn
+  tags = local.tags
 
-    rules {
-      id     = "replica_configuration"
-      prefix = ""
-      status = "Enabled"
-
-      source_selection_criteria {
-        sse_kms_encrypted_objects {
-          enabled = true
-        }
-      }
-
-      destination {
-        bucket             = aws_s3_bucket.replica.arn
-        storage_class      = "STANDARD"
-        replica_kms_key_id = aws_kms_key.replica.arn
-      }
-    }
+  lifecycle {
+    create_before_destroy = true
   }
-
-  dynamic "lifecycle_rule" {
-    for_each = local.define_lifecycle_rule ? [true] : []
-
-    content {
-      enabled = true
-      dynamic "noncurrent_version_transition" {
-        for_each = var.noncurrent_version_transitions
-
-        content {
-          days          = noncurrent_version_transition.value.days
-          storage_class = noncurrent_version_transition.value.storage_class
-        }
-      }
-      dynamic "noncurrent_version_expiration" {
-        for_each = var.noncurrent_version_expiration != null ? [var.noncurrent_version_expiration] : []
-
-        content {
-          days = noncurrent_version_expiration.value.days
-        }
-      }
-    }
-  }
-
-  tags = var.tags
 }
 
-resource "aws_s3_bucket_policy" "replica_force_ssl" {
-  provider = aws.replica
-  bucket   = aws_s3_bucket.replica.id
-  policy   = data.aws_iam_policy_document.replica_force_ssl.json
+# State bucket policy
+resource "aws_s3_bucket_policy" "state_force_ssl" {
+  bucket = aws_s3_bucket.state.id
+  policy = data.aws_iam_policy_document.s3_document.json
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
+# State public access block
 resource "aws_s3_bucket_public_access_block" "state" {
   bucket = aws_s3_bucket.state.id
 
@@ -151,4 +75,22 @@ resource "aws_s3_bucket_public_access_block" "state" {
   block_public_policy     = true
   ignore_public_acls      = true
   restrict_public_buckets = true
+
+  depends_on = [
+    aws_s3_bucket_policy.state_force_ssl
+  ]
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+# State bucket folder object
+resource "aws_s3_bucket_object" "bucket_key" {
+  bucket = aws_s3_bucket.state.id
+  key    = var.bucket_key
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
