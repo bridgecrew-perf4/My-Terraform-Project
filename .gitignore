@@ -11,3 +11,4 @@ test.py
 .terraform*
 *.tfvars
 *.tfstate*
+tfplan
