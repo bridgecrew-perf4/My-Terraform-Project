@@ -38,22 +38,25 @@ provider "aws" {
 }
 
 # Execute DynamoDB module
-# module "dynamo" {
-#   source            = "./modules/dynamo"
-# }
+module "dynamo" {
+  source      = "./modules/dynamo"
+  environment = var.environment
+}
 
 # Execute S3 module
 module "s3" {
   source      = "./modules/s3"
   environment = var.environment
+  region      = var.region
   s3_bucket   = var.s3_bucket
   bucket_key  = var.bucket_key
 }
 
 # Execute IAM module
 module "iam" {
-  source      = "./modules/iam"
-  environment = var.environment
-  s3_bucket   = module.s3.bucket_id
-  kms_key     = module.s3.kms_key_id
+  source         = "./modules/iam"
+  environment    = var.environment
+  s3_bucket      = module.s3.bucket_id
+  kms_key        = module.s3.kms_key_id
+  dynamodb_table = module.dynamo.dynamodb_table
 }

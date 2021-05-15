@@ -12,6 +12,11 @@ data "aws_kms_key" "selected" {
   key_id = var.kms_key
 }
 
+# DynamoDB lock table
+data "aws_dynamodb_table" "selected" {
+  name = var.dynamodb_table
+}
+
 # Terraform IAM policy document
 data "aws_iam_policy_document" "terraform_document" {
   statement {
@@ -39,17 +44,17 @@ data "aws_iam_policy_document" "terraform_document" {
     ]
   }
 
-  # statement {
-  #   effect = "Allow"
-  #   actions = [
-  #       "dynamodb:GetItem",
-  #       "dynamodb:PutItem",
-  #       "dynamodb:DeleteItem"
-  #   ]
-  #   resources = [
-  #       aws_dynamodb_table.lock.arn
-  #   ]
-  # }
+  statement {
+    effect = "Allow"
+    actions = [
+      "dynamodb:GetItem",
+      "dynamodb:PutItem",
+      "dynamodb:DeleteItem"
+    ]
+    resources = [
+      data.aws_dynamodb_table.selected.arn
+    ]
+  }
 
   statement {
     effect = "Allow"

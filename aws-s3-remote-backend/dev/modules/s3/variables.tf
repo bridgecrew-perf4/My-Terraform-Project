@@ -4,7 +4,7 @@ Variables used with the S3 Terraform template.
 
 variable "environment" {
   type        = string
-  default     = "dev"
+  default     = null
   description = "Deployment environment name"
 }
 
