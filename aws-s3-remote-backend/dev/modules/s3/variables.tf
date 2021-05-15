@@ -10,7 +10,7 @@ variable "environment" {
 
 variable "region" {
   type        = string
-  default     = "us-west-2"
+  default     = null
   description = "AWS region"
 }
 
