@@ -5,9 +5,7 @@ Terraform template that builds a VPC.
 # Local variables
 locals {
   tags = {
-    env       = var.environment
-    module    = path.module
-    workspace = terraform.workspace
+    module = path.module
   }
 }
 
@@ -17,8 +15,9 @@ resource "aws_vpc" "my_vpc" {
   enable_dns_hostnames = true
   enable_dns_support   = true
 
-  tags = merge({
-    Name = "${var.environment}_vpc"
+  tags = merge(
+    {
+      Name = "${var.environment}_vpc"
     },
     local.tags
   )
@@ -35,8 +34,9 @@ resource "aws_vpc" "my_vpc" {
 resource "aws_internet_gateway" "my_igw" {
   vpc_id = aws_vpc.my_vpc.id
 
-  tags = merge({
-    Name = "${var.environment}_igw"
+  tags = merge(
+    {
+      Name = "${var.environment}_igw"
     },
     local.tags
   )
@@ -50,9 +50,10 @@ resource "aws_internet_gateway" "my_igw" {
 resource "aws_eip" "my_nat_eip" {
   vpc = true
 
-  tags = merge({
-    Name    = "${var.environment}_nat_eip"
-    network = "NAT"
+  tags = merge(
+    {
+      Name    = "${var.environment}_nat_eip"
+      network = "NAT"
     },
     local.tags
   )
@@ -71,8 +72,9 @@ resource "aws_nat_gateway" "my_nat" {
   allocation_id = aws_eip.my_nat_eip.id
   subnet_id     = aws_subnet.public_subnet_a.id
 
-  tags = merge({
-    Name = "${var.environment}_nat"
+  tags = merge(
+    {
+      Name = "${var.environment}_nat"
     },
     local.tags
   )
@@ -97,9 +99,10 @@ resource "aws_subnet" "public_subnet_a" {
   map_public_ip_on_launch = true
   vpc_id                  = aws_vpc.my_vpc.id
 
-  tags = merge({
-    Name       = "${var.environment}_public_subnet_a"
-    subnettype = "public"
+  tags = merge(
+    {
+      Name       = "${var.environment}_public_subnet_a"
+      subnettype = "public"
     },
     local.tags
   )
@@ -113,9 +116,10 @@ resource "aws_subnet" "public_subnet_a" {
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.my_vpc.id
 
-  tags = merge({
-    Name       = "${var.environment}_public_route_table"
-    subnettype = "public"
+  tags = merge(
+    {
+      Name       = "${var.environment}_public_route_table"
+      subnettype = "public"
     },
     local.tags
   )
@@ -156,10 +160,11 @@ resource "aws_subnet" "private_subnet_a" {
   map_public_ip_on_launch = false
   vpc_id                  = aws_vpc.my_vpc.id
 
-  tags = merge({
-    Name       = "${var.environment}_private_subnet_a"
-    network    = "NAT"
-    subnettype = "private"
+  tags = merge(
+    {
+      Name       = "${var.environment}_private_subnet_a"
+      network    = "NAT"
+      subnettype = "private"
     },
     local.tags
   )

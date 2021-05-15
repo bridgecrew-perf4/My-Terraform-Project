@@ -4,7 +4,7 @@ Variables used with the main Terraform template.
 
 variable "environment" {
   type        = string
-  default     = null
+  default     = "dev"
   description = "Deployment environment name"
 }
 
@@ -16,8 +16,14 @@ variable "profile" {
 
 variable "region" {
   type        = string
-  default     = null
+  default     = "us-west-2"
   description = "AWS region"
+}
+
+variable "default_tags" {
+  type        = map(any)
+  default     = {}
+  description = "Default tags for AWS resources"
 }
 
 variable "availability_zone" {
