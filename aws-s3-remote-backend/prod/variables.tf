@@ -4,7 +4,7 @@ Variables used with the main Terraform template.
 
 variable "environment" {
   type        = string
-  default     = "cert"
+  default     = "prod"
   description = "Deployment environment name"
 }
 
