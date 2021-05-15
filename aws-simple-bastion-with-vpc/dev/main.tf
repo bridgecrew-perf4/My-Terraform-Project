@@ -21,6 +21,36 @@ locals {
     Terraform = true
     env       = var.environment
     workspace = terraform.workspace
+    project   = var.project_name
+  }
+  state_bucket = format(
+    "%s-%s-%s",
+    var.environment,
+    var.region,
+    var.state_bucket
+  )
+  lock_table = format(
+    "%s-%s",
+    var.environment,
+    var.lock_table
+  )
+}
+
+# Declare Terraform backend
+terraform {
+  backend "s3" {
+    # S3 state bucket
+    region               = "us-west-2"
+    profile              = "sso_poweruser"
+    session_name         = "terraform"
+    bucket               = "dev-us-west-2-terraform-state-20210515"
+    key                  = "aws-simple-bastion-with-vpc/terraform.tfstate"
+    encrypt              = true
+    kms_key_id           = "2a77097c-c08b-457b-9866-f61570ea83c7"
+    workspace_key_prefix = "dev:"
+
+    # DynamoDB lock table
+    dynamodb_table = "dev-tf-remote-state-lock"
   }
 }
 

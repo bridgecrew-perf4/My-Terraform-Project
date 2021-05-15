@@ -13,7 +13,7 @@ locals {
     var.region,
     var.s3_bucket,
     formatdate(
-      "YYYY-MM-DD",
+      "YYYYMMDD",
       timestamp()
     )
   )
@@ -50,7 +50,23 @@ resource "aws_s3_bucket" "state" {
     }
   }
 
+  force_destroy = true
+
   tags = local.tags
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+# State public access block
+resource "aws_s3_bucket_public_access_block" "private" {
+  bucket = aws_s3_bucket.state.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
 
   lifecycle {
     create_before_destroy = true
@@ -62,22 +78,8 @@ resource "aws_s3_bucket_policy" "state_force_ssl" {
   bucket = aws_s3_bucket.state.id
   policy = data.aws_iam_policy_document.s3_document.json
 
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
-# State public access block
-resource "aws_s3_bucket_public_access_block" "state" {
-  bucket = aws_s3_bucket.state.id
-
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
-
   depends_on = [
-    aws_s3_bucket_policy.state_force_ssl
+    aws_s3_bucket_public_access_block.private
   ]
 
   lifecycle {
