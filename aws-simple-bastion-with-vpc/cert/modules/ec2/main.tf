@@ -5,9 +5,7 @@ Terraform template that builds an EC2 instance.
 # Local variables
 locals {
   tags = {
-    env       = var.environment
-    module    = path.module
-    workspace = terraform.workspace
+    module = path.module
   }
 }
 
@@ -34,8 +32,9 @@ resource "aws_instance" "bastion" {
     var.bastion_sg
   ]
 
-  tags = merge({
-    Name = "${var.environment}_bastion_host"
+  tags = merge(
+    {
+      Name = "${var.environment}_bastion_host"
     },
     local.tags
   )
@@ -61,8 +60,9 @@ resource "aws_instance" "private" {
     var.private_sg
   ]
 
-  tags = merge({
-    Name = "${var.environment}_private_ec2"
+  tags = merge(
+    {
+      Name = "${var.environment}_private_ec2"
     },
     local.tags
   )

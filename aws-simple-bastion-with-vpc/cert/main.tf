@@ -5,6 +5,7 @@ Author: Chad Bartel
 Date:   2021-04-03
 */
 
+# Declare required Terraform providers
 terraform {
   required_providers {
     aws = {
@@ -14,11 +15,29 @@ terraform {
   }
 }
 
+# Local variables
+locals {
+  tags = {
+    Terraform = true
+    env       = var.environment
+    workspace = terraform.workspace
+  }
+}
+
+# Create AWS Terraform provider
 provider "aws" {
   region  = var.region
   profile = var.profile
+
+  default_tags {
+    tags = merge(
+      var.default_tags,
+      local.tags
+    )
+  }
 }
 
+# Execute VPC module
 module "vpc" {
   source                = "./modules/vpc"
   my_ip_address         = var.my_ip_address
@@ -29,6 +48,7 @@ module "vpc" {
   environment           = var.environment
 }
 
+# Execute EC2 module
 module "ec2" {
   source            = "./modules/ec2"
   key_name          = var.key_name

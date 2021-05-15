@@ -1,5 +1,5 @@
 /*
-Variables used with the main Terraform template.
+Variables used with the AWS VPC Terraform module.
 */
 
 variable "environment" {
@@ -8,46 +8,10 @@ variable "environment" {
   description = "Deployment environment name"
 }
 
-variable "profile" {
-  type        = string
-  default     = null
-  description = "AWS profile name"
-}
-
-variable "region" {
-  type        = string
-  default     = null
-  description = "AWS region"
-}
-
 variable "availability_zone" {
   type        = string
   default     = null
   description = "AWS availability zone"
-}
-
-variable "key_name" {
-  type        = string
-  default     = null
-  description = "SSH key name"
-}
-
-variable "public_key" {
-  type        = string
-  default     = null
-  description = "SSH public key"
-}
-
-variable "ami" {
-  type        = string
-  default     = null
-  description = "Amazon Machine Instance identifier"
-}
-
-variable "instance_type" {
-  type        = string
-  default     = null
-  description = "EC2 instance type"
 }
 
 variable "vpc_cidr" {
