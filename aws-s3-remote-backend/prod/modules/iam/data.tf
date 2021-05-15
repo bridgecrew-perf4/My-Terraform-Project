@@ -17,7 +17,28 @@ data "aws_dynamodb_table" "selected" {
   name = var.dynamodb_table
 }
 
-# Terraform IAM policy document
+# Terraform IAM policy document to assume any role if it's run by any service
+data "aws_iam_policy_document" "terraform_assume" {
+  statement {
+    actions = [
+      "sts:AssumeRole"
+    ]
+
+    principals {
+      type = "Service"
+      identifiers = [
+        "ec2.amazonaws.com",
+        "ecs.amazonaws.com",
+        "eks.amazonaws.com",
+        "lambda.amazonaws.com",
+        "ebs.amazonaws.com",
+        "batch.amazonaws.com"
+      ]
+    }
+  }
+}
+
+# Terraform IAM policy document to manage state remotely
 data "aws_iam_policy_document" "terraform_document" {
   statement {
     effect = "Allow"

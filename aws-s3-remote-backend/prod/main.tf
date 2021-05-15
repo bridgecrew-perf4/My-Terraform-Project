@@ -21,6 +21,7 @@ locals {
     Terraform = true
     env       = var.environment
     workspace = terraform.workspace
+    project   = var.project_name
   }
 }
 

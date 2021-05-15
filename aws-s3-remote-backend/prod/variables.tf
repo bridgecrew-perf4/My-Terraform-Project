@@ -2,6 +2,12 @@
 Variables used with the main Terraform template.
 */
 
+variable "project_name" {
+  type        = string
+  default     = "aws-s3-remote-backend"
+  description = "Name of Terraform project"
+}
+
 variable "environment" {
   type        = string
   default     = "prod"
@@ -34,6 +40,6 @@ variable "s3_bucket" {
 
 variable "bucket_key" {
   type        = string
-  default     = "/network"
+  default     = "network/"
   description = "Path to the state file inside the S3 bucket. When using a non-default workspace, the state path will be /workspace_key_prefix/workspace_name/key."
 }
