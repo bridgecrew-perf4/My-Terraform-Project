@@ -9,3 +9,4 @@ As an alternative to leveraging the [`workspace`](https://www.terraform.io/docs/
 * [AWS S3 Remote Backend](./aws-s3-remote-backend/README.md)
 * [AWS Simple Bastion with VPC](./aws-simple-bastion-with-vpc/README.md)
 * [AWS Simple VPC](./aws-simple-vpc/README.md)
+* [AWS S3 Static Website](./aws-s3-static-website/README.md)
