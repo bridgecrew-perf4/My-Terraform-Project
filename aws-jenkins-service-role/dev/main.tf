@@ -72,19 +72,6 @@ provider "aws" {
 }
 
 
-# TODO: IAM policy for Jenkins
-resource "aws_iam_policy" "jenkins_policy" {
-  name        = "jenkins-service-policy-${var.environment}"
-  path        = "/"
-  description = "AWS IAM role providing access to various services for Jenkins"
-
-  policy = data.aws_iam_policy_document.services.json
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
 # IAM role for Jenkins
 resource "aws_iam_role" "jenkins_role" {
   name        = local.iam_role
@@ -98,10 +85,25 @@ resource "aws_iam_role" "jenkins_role" {
   }
 }
 
-# TODO: Attach IAM policy to role
-# resource "aws_iam_policy_attachment" "name" {
+# IAM policy for Jenkins
+resource "aws_iam_policy" "jenkins_policy" {
+  name        = "jenkins-service-policy-${var.environment}"
+  path        = "/"
+  description = "AWS IAM role providing access to various services for Jenkins"
 
-#   lifecycle {
-#     create_before_destroy = true
-#   }
-# }
+  policy = data.aws_iam_policy_document.services.json
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+# Attach IAM policy to role
+resource "aws_iam_role_policy_attachment" "name" {
+  role       = aws_iam_role.jenkins_role.id
+  policy_arn = aws_iam_policy.jenkins_policy.arn
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
