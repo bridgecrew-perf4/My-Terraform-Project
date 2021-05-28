@@ -2,9 +2,9 @@
 Variables used with the main Terraform template.
 */
 
-variable "project_name" {
+variable "project" {
   type        = string
-  default     = "aws-jenkins-service-role"
+  default     = ""
   description = "Name of Terraform project"
 }
 

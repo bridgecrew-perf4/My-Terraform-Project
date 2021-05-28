@@ -38,22 +38,17 @@ terraform {
 
 # Local variables
 locals {
-  # Default AWS variables
-  default_aws_account   = "000000000000"
-  default_iam_role      = "jenkins-service-role-${var.environment}"
-  default_principal_arn = "arn:aws:iam::${local.aws_account}:root"
-
-  # AWS variables
+  project       = var.project != "" ? var.project : "aws-jenkins-service-role"
   profile       = var.profile != "" ? var.profile : "default"
   region        = var.region != "" ? var.region : "us-west-2"
-  aws_account   = var.aws_account != "" ? var.aws_account : local.default_aws_account
-  iam_role      = var.iam_role != "" ? var.iam_role : local.default_iam_role
-  principal_arn = var.principal_arn != "" ? var.principal_arn : local.default_principal_arn
+  aws_account   = var.aws_account != "" ? var.aws_account : "000000000000"
+  iam_role      = var.iam_role != "" ? var.iam_role : "jenkins-service-role-${var.environment}"
+  principal_arn = var.principal_arn != "" ? var.principal_arn : "arn:aws:iam::${local.aws_account}:root"
   tags = {
     Terraform = true
     env       = var.environment
     workspace = terraform.workspace
-    project   = var.project_name
+    project   = local.project
   }
 }
 
