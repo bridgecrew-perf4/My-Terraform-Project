@@ -44,9 +44,33 @@ provider "aws" {
 # TODO: Create IAM policy for each additonal action key-list
 resource "aws_iam_policy" "name" {
   for_each = var.custom_iam_policy_actions
+
+  name = format(
+    "%s_service_group_policy_%s",
+    each.key,
+    var.environment
+  )
+  path        = "/services/usergroups/"
+  description = "Service user group IAM policy for ${each.key}"
+
+  policy = data.aws_iam_policy_document.this[each.key].json
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 # TODO: Create IAM user group with policies
 resource "aws_iam_group" "service" {
-  
+  count = length(var.iam_policies)
+
+  name = format(
+    "serviceusergroup%s",
+    var.environment != "prod" ? "-${var.environment}" : ""
+  )
+  path = "/services/"
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }

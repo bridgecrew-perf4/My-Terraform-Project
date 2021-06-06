@@ -32,7 +32,7 @@ variable "default_tags" {
   description = "Default tags for AWS resources"
 }
 
-variable "policy_list" {
+variable "iam_policies" {
   type = list(string)
   default = [
     "arn:aws:iam::aws:policy/job-function/ViewOnlyAccess",
@@ -44,7 +44,7 @@ variable "policy_list" {
 variable "custom_iam_policy_actions" {
   type = map(any)
   default = {
-    kms: [
+    kms : [
       "Decrypt",
       "Encrypt",
       "GenerateDataKey"
