@@ -12,4 +12,3 @@ test.py
 *.tfvars
 *.tfstate*
 tfplan
-backend.tf
