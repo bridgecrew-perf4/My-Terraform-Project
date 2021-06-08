@@ -7,9 +7,10 @@ data "aws_iam_policy_document" "this" {
   for_each = var.custom_iam_policy_actions
 
   statement {
-    actions = [
-      "{each.key}:{each.value}"
-    ]
+    actions = formatlist(
+      "${each.key}:%s",
+      each.value
+    )
     resources = ["*"]
   }
 }

@@ -41,8 +41,8 @@ provider "aws" {
 }
 
 
-# TODO: Create IAM policy for each additonal action key-list
-resource "aws_iam_policy" "name" {
+# Create IAM policy for each additonal action key-list
+resource "aws_iam_policy" "policy" {
   for_each = var.custom_iam_policy_actions
 
   name = format(
@@ -50,7 +50,7 @@ resource "aws_iam_policy" "name" {
     each.key,
     var.environment
   )
-  path        = "/services/usergroups/"
+  path        = "/"
   description = "Service user group IAM policy for ${each.key}"
 
   policy = data.aws_iam_policy_document.this[each.key].json
@@ -60,17 +60,32 @@ resource "aws_iam_policy" "name" {
   }
 }
 
-# TODO: Create IAM user group with policies
+# Create IAM user group with policies
 resource "aws_iam_group" "service" {
-  count = length(var.iam_policies)
-
   name = format(
     "serviceusergroup%s",
     var.environment != "prod" ? "-${var.environment}" : ""
   )
-  path = "/services/"
+  path = "/"
 
   lifecycle {
     create_before_destroy = true
   }
+}
+
+# Attach IAM polcies to user group
+resource "aws_iam_group_policy_attachment" "attach_policies" {
+  count = length(var.iam_policies)
+
+  group = aws_iam_group.service.name
+  policy_arn = element(
+    var.iam_policies,
+    count.index
+  )
+}
+resource "aws_iam_group_policy_attachment" "attach_custom" {
+  for_each = var.custom_iam_policy_actions
+
+  group      = aws_iam_group.service.name
+  policy_arn = aws_iam_policy.policy[each.key].arn
 }

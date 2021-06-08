@@ -44,7 +44,7 @@ variable "iam_policies" {
 variable "custom_iam_policy_actions" {
   type = map(any)
   default = {
-    kms : [
+    kms = [
       "Decrypt",
       "Encrypt",
       "GenerateDataKey"
