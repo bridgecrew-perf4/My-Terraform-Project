@@ -70,7 +70,7 @@ resource "aws_eip" "my_nat_eip" {
 # NAT (network access translation)
 resource "aws_nat_gateway" "my_nat" {
   allocation_id = aws_eip.my_nat_eip.id
-  subnet_id     = aws_subnet.public_subnet_a.id
+  subnet_id     = aws_subnet.public_subnet.id
 
   tags = merge(
     {
@@ -81,7 +81,7 @@ resource "aws_nat_gateway" "my_nat" {
 
   depends_on = [
     aws_internet_gateway.my_igw,
-    aws_subnet.public_subnet_a
+    aws_subnet.public_subnet
   ]
 
   lifecycle {
@@ -93,15 +93,15 @@ resource "aws_nat_gateway" "my_nat" {
     PUBLIC SUBNET
 */
 # Public subnet
-resource "aws_subnet" "public_subnet_a" {
+resource "aws_subnet" "public_subnet" {
   availability_zone       = var.availability_zone
-  cidr_block              = var.public_subnet_a_cidr
+  cidr_block              = var.public_subnet_cidr
   map_public_ip_on_launch = true
   vpc_id                  = aws_vpc.my_vpc.id
 
   tags = merge(
     {
-      Name       = "${var.environment}_public_subnet_a"
+      Name       = "${var.environment}_public_subnet"
       subnettype = "public"
     },
     local.tags
@@ -143,7 +143,7 @@ resource "aws_route" "public_internet_gateway" {
 # Public route table association
 resource "aws_route_table_association" "public" {
   route_table_id = aws_route_table.public.id
-  subnet_id      = aws_subnet.public_subnet_a.id
+  subnet_id      = aws_subnet.public_subnet.id
 
   lifecycle {
     create_before_destroy = true
@@ -154,15 +154,15 @@ resource "aws_route_table_association" "public" {
     PRIVATE SUBNET
 */
 # Private subnet
-resource "aws_subnet" "private_subnet_a" {
+resource "aws_subnet" "private_subnet" {
   availability_zone       = var.availability_zone
-  cidr_block              = var.private_subnet_a_cidr
+  cidr_block              = var.private_subnet_cidr
   map_public_ip_on_launch = false
   vpc_id                  = aws_vpc.my_vpc.id
 
   tags = merge(
     {
-      Name       = "${var.environment}_private_subnet_a"
+      Name       = "${var.environment}_private_subnet"
       network    = "NAT"
       subnettype = "private"
     },
@@ -204,7 +204,7 @@ resource "aws_route" "private_route" {
 # Private route table association
 resource "aws_route_table_association" "private" {
   route_table_id = aws_route_table.private.id
-  subnet_id      = aws_subnet.private_subnet_a.id
+  subnet_id      = aws_subnet.private_subnet.id
 
   lifecycle {
     create_before_destroy = true

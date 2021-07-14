@@ -2,12 +2,6 @@
 Variables used with the main Terraform template.
 */
 
-variable "project_name" {
-  type        = string
-  default     = "aws-simple-bastion-with-vpc"
-  description = "Name of Terraform project"
-}
-
 variable "environment" {
   type        = string
   default     = "prod"
@@ -27,14 +21,17 @@ variable "region" {
 }
 
 variable "default_tags" {
-  type        = map(any)
-  default     = {}
+  type = map(any)
+  default = {
+    Terraform = true
+    project   = "aws-simple-bastion-with-vpc"
+  }
   description = "Default tags for AWS resources"
 }
 
 variable "availability_zone" {
   type        = string
-  default     = null
+  default     = ""
   description = "AWS availability zone"
 }
 
@@ -64,17 +61,17 @@ variable "instance_type" {
 
 variable "vpc_cidr" {
   type        = string
-  default     = null
+  default     = ""
   description = "CIDR block for the VPC"
 }
 
-variable "public_subnet_a_cidr" {
+variable "public_subnet_cidr" {
   type        = string
   default     = null
   description = "CIDR block for the public subnet"
 }
 
-variable "private_subnet_a_cidr" {
+variable "private_subnet_cidr" {
   type        = string
   default     = null
   description = "CIDR block for the private subnet"
@@ -82,30 +79,6 @@ variable "private_subnet_a_cidr" {
 
 variable "my_ip_address" {
   type        = string
-  default     = null
+  default     = ""
   description = "My public IP address"
-}
-
-variable "state_bucket" {
-  type        = string
-  default     = "terraform-state-20210515"
-  description = "Name of the S3 state bucket"
-}
-
-variable "lock_table" {
-  type        = string
-  default     = "tf-remote-state-lock"
-  description = "Name of the DynamoDB lock table"
-}
-
-variable "state_key" {
-  type        = string
-  default     = null
-  description = "AWS KMS key id for S3 state bucket"
-}
-
-variable "kms_key_id" {
-  type        = string
-  default     = null
-  description = "AWS KMS key id for S3 state bucket"
 }

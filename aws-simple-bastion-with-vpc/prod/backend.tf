@@ -4,10 +4,10 @@ terraform {
     region               = "us-west-2"
     profile              = "sso_poweruser"
     session_name         = "terraform"
-    bucket               = "prod-us-west-2-terraform-state-20210515"
+    bucket               = "prod-us-west-2-my-terraform-backend-files"
     key                  = "aws-simple-bastion-with-vpc/terraform.tfstate"
     encrypt              = true
-    kms_key_id           = "8c97e9b0-7491-47fe-83d2-878db0064d20"
+    kms_key_id           = "433aa9f4-63c7-4fb2-aeba-5177b53ee7cc"
     workspace_key_prefix = "prod:"
 
     # DynamoDB lock table

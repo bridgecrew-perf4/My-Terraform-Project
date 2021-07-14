@@ -7,14 +7,14 @@ output "aws_vpc_id" {
   value       = aws_vpc.my_vpc.id
 }
 
-output "aws_public_subnet_id_a" {
+output "aws_public_subnet_id" {
   description = "AWS ID of the subnet."
-  value       = aws_subnet.public_subnet_a.id
+  value       = aws_subnet.public_subnet.id
 }
 
-output "aws_private_subnet_id_a" {
+output "aws_private_subnet_id" {
   description = "AWS ID of the subnet."
-  value       = aws_subnet.private_subnet_a.id
+  value       = aws_subnet.private_subnet.id
 }
 
 output "bastion_sg" {

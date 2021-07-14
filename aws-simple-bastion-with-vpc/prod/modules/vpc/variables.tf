@@ -20,13 +20,13 @@ variable "vpc_cidr" {
   description = "CIDR block for the VPC"
 }
 
-variable "public_subnet_a_cidr" {
+variable "public_subnet_cidr" {
   type        = string
   default     = null
   description = "CIDR block for the public subnet"
 }
 
-variable "private_subnet_a_cidr" {
+variable "private_subnet_cidr" {
   type        = string
   default     = null
   description = "CIDR block for the private subnet"
